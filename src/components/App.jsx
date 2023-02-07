@@ -17,8 +17,7 @@ export default function App() {
   const [status, setStatus] = useState('idle');
   const [page, setPage] = useState(1);
   const [pictureName, setPictureName] = useState('');
-  const [images, setImages] = useState(null);
-
+  const [images, setImages] = useState([]);
   const [error, setError] = useState(null);
   const [showButton] = useState(false);
   const [, setTotalHits] = useState(0);
@@ -48,19 +47,19 @@ export default function App() {
             }
           );
 
-          setImages([...images, ...imagesList]);
-
+          setImages(prevState => [...prevState, ...imagesList]);
           setTotalHits(totalHits);
           showButton(page < Math.ceil(totalHits / 12));
           setStatus('resolved');
         })
 
-        .catch(error => setError(error), setStatus('rejected'));
-
-      console.log(images);
+        .catch(error => {
+          setError(error);
+          setStatus('rejected');
+        });
     };
     getImages(page, pictureName);
-  }, [page, pictureName]);
+  }, [images, page, pictureName, showButton]);
 
   const onSubmitFormHandler = pictureName => {
     if (pictureName) {
