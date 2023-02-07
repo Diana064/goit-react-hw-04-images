@@ -18,8 +18,8 @@ export default function App() {
   const [page, setPage] = useState(1);
   const [pictureName, setPictureName] = useState('');
   const [images, setImages] = useState([]);
-  const [error, setError] = useState(null);
-  const [showButton] = useState(false);
+  const [error, setError] = useState('');
+  const [showButton, setShowButton] = useState(false);
   const [, setTotalHits] = useState(0);
 
   useEffect(() => {
@@ -46,28 +46,30 @@ export default function App() {
               };
             }
           );
-
           setImages(prevState => [...prevState, ...imagesList]);
           setTotalHits(totalHits);
-          showButton(page < Math.ceil(totalHits / 12));
+          setShowButton(page < Math.ceil(totalHits / 12));
           setStatus('resolved');
         })
 
         .catch(error => {
-          setError(error);
+          setError(error.message);
           setStatus('rejected');
         });
     };
-    getImages(page, pictureName);
-  }, [images, page, pictureName, showButton]);
+    if (pictureName) {
+      getImages(page, pictureName);
+    }
+  }, [page, pictureName]);
 
   const onSubmitFormHandler = pictureName => {
     if (pictureName) {
       setPictureName(pictureName);
+
+      setPage(1);
+      setStatus('pending');
+      setImages([]);
     }
-    setPage(1);
-    setStatus('pending');
-    setImages([]);
   };
 
   const loadMore = () => {
@@ -81,12 +83,10 @@ export default function App() {
       {status === 'rejected' && <div>{error}</div>}
       {status === 'resolved' && (
         <div className={css.App}>
-          <Searchbar onSubmit={onSubmitFormHandler} />
           <ImageGallery images={images} />
           {showButton && <Button onClick={loadMore}>Load More</Button>}
         </div>
       )}
-
       {/* {showButton && <Button onClick={this.loadMore}>Load More</Button>} */}
     </div>
   );
