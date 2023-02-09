@@ -1,6 +1,6 @@
 import React from 'react';
 import css from './ImageGalleryItem.module.css';
-import { Modal } from '../modal/Modal';
+import Modal from '../modal/Modal';
 import { useState } from 'react';
 
 export default function ImageGalleryItem({

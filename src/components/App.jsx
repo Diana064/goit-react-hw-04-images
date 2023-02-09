@@ -1,7 +1,7 @@
 /* eslint-disable no-sequences */
 
 import { Loader } from './loader/Loader';
-import { Searchbar } from './searchbar/Searchbar';
+import Searchbar from './searchbar/Searchbar';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ImageGallery from './imageGallery/ImageGallery';
