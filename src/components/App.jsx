@@ -9,32 +9,21 @@ import css from './App.module.css';
 import { Button } from './button/Button';
 import { useState } from 'react';
 import { useEffect } from 'react';
-
-const API_KEY = '31465649-f1ff204e289e0f72e30576924';
-const BASE_URL = 'https://pixabay.com/api/?';
+import pictureApi from './services/PictureApi';
 
 export default function App() {
   const [status, setStatus] = useState('idle');
   const [page, setPage] = useState(1);
   const [pictureName, setPictureName] = useState('');
   const [images, setImages] = useState([]);
-  const [error, setError] = useState('');
+  const [, setError] = useState('');
   const [showButton, setShowButton] = useState(false);
   const [, setTotalHits] = useState(0);
 
   useEffect(() => {
     const getImages = (page, pictureName) => {
-      fetch(
-        `${BASE_URL}q=${pictureName}&page=${page}&key=${API_KEY}&image_type=photo&orientation=horizontal&per_page=12`
-      )
-        .then(response => {
-          if (response.ok) {
-            return response.json();
-          }
-          return Promise.reject(
-            new Error(`Something wrong with this request ${pictureName}`)
-          );
-        })
+      pictureApi
+        .fetchPicture(pictureName, page)
         .then(({ hits, totalHits }) => {
           const imagesList = hits.map(
             ({ id, webformatURL, largeImageURL, tags }) => {
@@ -76,18 +65,15 @@ export default function App() {
     setPage(prevState => prevState + 1);
   };
   return (
-    <div className={css.App}>
-      <Searchbar onSubmit={onSubmitFormHandler} />
-      <ToastContainer />
+    <>
       {status === 'pending' && <Loader />}
-      {status === 'rejected' && <div>{error}</div>}
-      {status === 'resolved' && (
-        <div className={css.App}>
-          <ImageGallery images={images} />
-          {showButton && <Button onClick={loadMore}>Load More</Button>}
-        </div>
-      )}
-      {/* {showButton && <Button onClick={this.loadMore}>Load More</Button>} */}
-    </div>
+      {status === 'rejected' && <div>Oh, something went wrong</div>}
+      <div className={css.App}>
+        <Searchbar onSubmit={onSubmitFormHandler} />
+        <ImageGallery images={images} />
+        <ToastContainer />
+        {showButton && <Button onClick={loadMore}>Load More</Button>}
+      </div>
+    </>
   );
 }
